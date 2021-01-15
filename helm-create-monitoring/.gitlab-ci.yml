@@ -1,0 +1,24 @@
+stages:
+  - helm-create-monitoring
+
+helm:
+  stage: helm-create-monitoring
+  tags:
+    - Local-Runner
+  script:
+    # - rm -rf /home/gitlab-runner/helm-create-monitoring
+    # - helm delete prometheus ./
+    - mkdir /home/gitlab-runner/helm-create-monitoring
+    - cp -rf * /home/gitlab-runner/helm-create-monitoring
+    - cd /home/gitlab-runner/helm-create-monitoring
+    - helm create monitoring
+    - mv -f ./Chart.yaml ./values.yaml ./monitoring
+    - rm -rf monitoring/templates/*
+    - mv ./templates/* ./monitoring/templates
+    - cd ./monitoring
+    - helm dependency update
+    - helm lint ./
+    - helm template prometheus ./
+    - helm install prometheus ./
+    - kubectl patch service/prometheus-grafana --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"}]'
+    - kubectl get all -o wide
