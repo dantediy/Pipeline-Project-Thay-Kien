@@ -1,0 +1,20 @@
+---
+- name: add user 'gitlab-runner' to docker group 
+  hosts: rke-hosts
+  remote_user: root
+  become: true
+  tasks:
+    - name: add
+      user:
+        name: gitlab-runner
+        group: docker
+
+# - name: add user vms to docker group
+#   hosts: khoak8s
+#   remote_user: root
+#   become: true
+#   tasks:
+#     - name: add
+#       user:
+#         name: khoa
+#         group: docker

@@ -1,0 +1,18 @@
+[rke-hosts]
+gitlab-runner ansible_host=10.1.10.10
+
+[rke-hosts:vars]
+ansible_user=gitlab-runner
+ansible_password=1
+ansible_become_user=root
+ansible_become_password=1
+
+[khoak8s]
+master ansible_host=10.1.10.42
+worker1 ansible_host=10.1.10.40
+worker2 ansible_host=10.1.10.41
+
+[khoak8s:vars]
+ansible_user=khoa
+ansible_password=1
+ansible_become_password=1
