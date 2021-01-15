@@ -1,0 +1,12 @@
+stages:
+  - packer
+rke:
+  stage: packer
+  tags:
+    - Local-Runner
+  script:
+    - mkdir /home/gitlab-runner/packer
+    - cp -rf * /home/gitlab-runner/packer
+    - cd /home/gitlab-runner/packer/ubuntu
+    - chmod 0700 build-ubuntu-18.04.sh
+    - ./build-ubuntu-18.04.sh
