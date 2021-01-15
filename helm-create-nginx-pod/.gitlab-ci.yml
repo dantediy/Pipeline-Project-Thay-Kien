@@ -1,0 +1,21 @@
+stages:
+  - helm
+
+helm:
+  stage: helm
+  tags:
+    - Local-Runner
+  script:
+    - mkdir /home/gitlab-runner/helm-create-nginx-pod
+    - cp -rf * /home/gitlab-runner/helm-create-nginx-pod
+    - cd /home/gitlab-runner/helm-create-nginx-pod
+    - helm create mynginx
+    - mv -f ./Chart.yaml ./values.yaml ./mynginx
+    - rm -rf mynginx/templates/*
+    - mv -f ./deployment.yaml ./_helper.tpl ./service.yaml ./mynginx/templates/
+    - cd ./mynginx
+    - helm lint ./
+    - helm template khoa-demo ./
+    - cd /home/gitlab-runner/helm-create-nginx-pod
+    - helm install khoa-demo ./mynginx/
+    - kubectl get all -o wide
