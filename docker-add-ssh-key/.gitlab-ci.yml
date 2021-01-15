@@ -1,0 +1,14 @@
+stages:
+  - install-docker
+
+docker:
+  stage: install-docker
+  tags:
+    - Local-Runner
+  script:
+    - rm -rf /home/gitlab-runner/docker-add-ssh-key
+    - mkdir /home/gitlab-runner/docker-add-ssh-key
+    - cp -rf * /home/gitlab-runner/docker-add-ssh-key
+    - cd /home/gitlab-runner/docker-add-ssh-key
+    - ansible-playbook docker.yml
+    - ansible-playbook add-ssh-key.yml
