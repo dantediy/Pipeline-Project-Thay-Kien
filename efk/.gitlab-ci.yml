@@ -1,0 +1,42 @@
+stages:
+  - elasticsearch
+  - fluentb
+  - kibana
+
+elasticsearch:
+  stage: elasticsearch
+  tags:
+    - Local-Runner
+  script:
+    # - rm -rf /home/gitlab-runner/efk
+    # - helm delete elasticsearch -n logging
+    - mkdir /home/gitlab-runner/efk/
+    - cp -rf * /home/gitlab-runner/efk
+    - kubectl create namespace logging
+    - helm repo add stable https://charts.helm.sh/stable
+    - helm install elasticsearch stable/elasticsearch --set master.persistence.enabled=false --set data.persistence.enabled=false --set --namespace=logging --set client.replicas=1 --set data.replicas=1 #--set master.replicas=1 
+
+fluentb:
+  stage: fluentb
+  tags:
+    - Local-Runner
+  script:
+    # - kubectl delete -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/fluent-bit-service-account.yaml
+    # - kubectl delete -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/fluent-bit-role.yaml
+    # - kubectl delete -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/fluent-bit-role-binding.yaml
+    # - kubectl delete -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/output/elasticsearch/fluent-bit-configmap.yaml
+    # - kubectl delete -f fluent-bit-ds.yaml
+
+    - kubectl create -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/fluent-bit-service-account.yaml
+    - kubectl create -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/fluent-bit-role.yaml
+    - kubectl create -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/fluent-bit-role-binding.yaml
+    - kubectl create -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/master/output/elasticsearch/fluent-bit-configmap.yaml
+    - kubectl create -f fluent-bit-ds.yaml
+
+kibana:
+  stage: kibana
+  tags:
+    - Local-Runner
+  script:
+    # - helm delete kibana -n logging
+    - helm install kibana stable/kibana --set env.ELASTICSEARCH_HOSTS=http://elasticsearch-client:9200 --set service.type=NodePort --set --namespace=logging 
