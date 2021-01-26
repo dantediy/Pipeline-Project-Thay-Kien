@@ -1,0 +1,3 @@
+---
+- import_tasks: add-ssh-key.yml
+- import_tasks: docker.yml
